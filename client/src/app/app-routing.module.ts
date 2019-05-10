@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import {RouterModule, Routes} from "@angular/router";
 import {HomeComponent} from "./component/home/home.component";
 import {DashboardComponent} from "./component/dashboard/dashboard.component";
+import {RegisterComponent} from "./component/register/register.component";
 
 const appRoutes: Routes = [
   {
@@ -12,8 +13,8 @@ const appRoutes: Routes = [
     path: 'dashboard',
     component: DashboardComponent
   },
-  { path: '**', component: HomeComponent
-  },
+  { path: 'register', component: RegisterComponent },
+  { path: '**', component: HomeComponent },
 ];
 @NgModule({
   declarations: [],
