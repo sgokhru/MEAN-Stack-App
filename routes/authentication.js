@@ -47,5 +47,38 @@ module.exports = function(router) {
             });
         }
     });
+
+    router.get('/checkEmail/:email', function(req, res, next) {
+        if(!req.params.email) {
+            res.json({success: false, message: 'E-mail is not provided'});
+        } else {
+            User.findOne({email: req.params.email}, function(err, user) {
+                if (err) {
+                    res.json({success: false, message: err});
+                } else if(user) {
+                    res.json({success: false, message: 'Email address is already taken'});
+                } else {
+                    res.json({success: true, message: 'Email is available'});
+                }
+            });
+        }
+    });
+
+    router.get('/checkUsername/:username', function(req, res, next) {
+        if(!req.params.username) {
+            res.json({success: false, message: 'Username is not provided'});
+        } else {
+            User.findOne({username: req.params.username}, function(err, user) {
+                if (err) {
+                    res.json({success: false, message: err});
+                } else if(user) {
+                    res.json({success: false, message: 'Username is already taken'});
+                } else {
+                    res.json({success: true, message: 'Username is available'});
+                }
+            });
+        }
+    });
+
     return router;
 };

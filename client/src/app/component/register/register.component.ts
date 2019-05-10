@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import {AuthenticationService} from "../../services/authentication.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-register',
@@ -8,8 +10,15 @@ import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 })
 export class RegisterComponent implements OnInit {
   registrationForm: FormGroup;
+  message: String;
+  messageClass: String;
+  processing = false;
+  emailValid;
+  emailMessage;
+  usernameValid;
+  usernameMessage;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private authenticationService: AuthenticationService, private router: Router) {
     this.createForm();
   }
 
@@ -76,8 +85,64 @@ export class RegisterComponent implements OnInit {
     };
   }
 
+  disableForm() {
+    this.registrationForm.controls['email'].disable();
+    this.registrationForm.controls['username'].disable();
+    this.registrationForm.controls['password'].disable();
+  }
+
+  enableForm() {
+    this.registrationForm.controls['email'].enable();
+    this.registrationForm.controls['username'].enable();
+    this.registrationForm.controls['password'].enable();
+  }
+
   onRegisterSubmit() {
-    console.log('1');
+    this.processing = true;
+    this.disableForm();
+    const user = {
+      email: this.registrationForm.get('email').value,
+      username: this.registrationForm.get('username').value,
+      password: this.registrationForm.get('password').value
+    };
+    this.authenticationService.registerUser(user).subscribe(data => {
+      if (!data.success) {
+        this.messageClass = 'alert alert-danger';
+        this.message = data.message;
+        this.processing = false;
+        this.enableForm();
+      } else {
+        this.messageClass = 'alert alert-success';
+        this.message = data.message;
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000)
+      }
+    });
+  }
+
+  checkUsername() {
+    this.authenticationService.checkUsername(this.registrationForm.get('username').value).subscribe(data => {
+      if(!data.success) {
+        this.usernameValid = false;
+        this.usernameMessage = data.message;
+      } else {
+        this.usernameValid = true;
+        this.usernameMessage = data.message;
+      }
+    })
+  }
+
+  checkEmail() {
+    this.authenticationService.checkEmail(this.registrationForm.get('email').value).subscribe(data => {
+      if(!data.success) {
+        this.emailValid = false;
+        this.emailMessage = data.message;
+      } else {
+        this.emailValid = true;
+        this.emailMessage = data.message;
+      }
+    })
   }
 
   ngOnInit() {
