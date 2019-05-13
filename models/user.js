@@ -131,7 +131,7 @@ userSchema.pre('save', function(next) {
         return next();
 
     // Apply encryption
-    bcrypt.hash(this.password, null, null, function(err, hash) {
+    bcrypt.hash(this.password, null, null, (err, hash) => {
         if (err) return next(err); // Ensure no errors
         this.password = hash; // Apply encryption to password
         next(); // Exit middleware
